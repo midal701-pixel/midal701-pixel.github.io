@@ -1,0 +1,36 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>조별 질문</title><style>
+body{font-family:Arial;background:#eef2f7;margin:0;display:flex;justify-content:center;align-items:center;height:100vh}
+#app{width:min(760px,94vw);background:#fff;border-radius:18px;padding:24px;box-shadow:0 8px 25px rgba(0,0,0,.15);text-align:center}
+h1{cursor:pointer}.card{min-height:180px;border:2px dashed #4a90e2;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:2rem;padding:20px}
+button{padding:12px 22px;border:0;border-radius:10px;background:#4a90e2;color:#fff;font-size:1rem;cursor:pointer;margin-top:18px}
+#admin{display:none;text-align:left} textarea{width:100%;height:90px}
+</style><div id=app>
+<div id=play>
+<h1 id=title>🎲 조별 질문</h1>
+<div class=card id=card>질문 시작을 눌러주세요.</div>
+<div id=info></div><button id=btn>질문 시작</button>
+</div>
+<div id=admin>
+<h2>관리자</h2>
+<p>공통질문(줄바꿈으로 구분)</p><textarea id=common></textarea>
+<p>선택질문(줄바꿈으로 구분)</p><textarea id=random></textarea>
+<button onclick=save()>저장</button>
+<button onclick=back()>닫기</button>
+</div></div>
+<script>
+const PW="1234";
+let cc=0,set=[],i=-1;
+const defC=["공통질문1","공통질문2"];
+const defR=["선택1","선택2","선택3","선택4","선택5","선택6","선택7","선택8","선택9","선택10"];
+function getC(){return JSON.parse(localStorage.c||JSON.stringify(defC))}
+function getR(){return JSON.parse(localStorage.r||JSON.stringify(defR))}
+function sh(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function newSet(){set=sh([...getC(),...sh([...getR()]).slice(0,3)]);i=-1;next();}
+function next(){i++;if(i>=set.length){card.textContent="🎉 끝!";info.textContent="";btn.textContent="다음 조";return;}
+card.textContent="🎲 질문을 뽑는 중...";btn.disabled=true;setTimeout(()=>{card.textContent=set[i];info.textContent=`질문 ${i+1}/${set.length}`;btn.textContent=i==set.length-1?"마무리":"다음 질문";btn.disabled=false;},700)}
+btn.onclick=()=>{if(btn.textContent=="질문 시작"||btn.textContent=="다음 조")newSet();else next();}
+title.onclick=()=>{cc++;setTimeout(()=>cc=0,1200);if(cc>=5){let p=prompt("관리자 비밀번호");if(p===PW){play.style.display="none";admin.style.display="block";common.value=getC().join("\n");random.value=getR().join("\n");cc=0;}}}
+function save(){localStorage.c=JSON.stringify(common.value.split("\n").filter(Boolean));localStorage.r=JSON.stringify(random.value.split("\n").filter(Boolean));alert("저장되었습니다.");}
+function back(){admin.style.display="none";play.style.display="block";}
+</script></html>
